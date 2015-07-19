@@ -1,0 +1,13 @@
+# Config:
+scope=identity
+refreshable=True
+
+# App Info
+app_key=
+app_secret=
+
+# Token
+token=
+refresh_token=
+
+scope=submit
