@@ -3,7 +3,7 @@ A script written in Python to link Windows Phone Store apps when triggered by a 
 
 ## Requirements
 1. Install [Python 3.4](https://www.python.org/download/releases/3.4.3/)  
-2. Install praw, requests, beautifulsoup4, OAuth2Util using pip.
+2. Install praw, requests, beautifulsoup4, OAuth2Util using separate pip commands or use `pip install -r requirements.txt` to install all required packages in one go.
 
   - praw - `pip install praw`
   - requests - `pip install requests`
