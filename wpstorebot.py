@@ -59,7 +59,7 @@ def post_comment(comment, reply):
 
 def get_app_name(stri):
     trigger = "\w*wpapp\[([^]]*)\]"
-    exp = re.compile(trigger)
+    exp = re.compile(trigger, re.I)
     found = exp.findall(stri)
     if found:
         return found
