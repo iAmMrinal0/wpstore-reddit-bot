@@ -8,7 +8,7 @@ A script written in Python to link Windows Phone Store apps when triggered by a 
   - praw - `pip install praw`
   - requests - `pip install requests`
   - beautifulsoup4 - `pip install beautifulsoup4`
-  - OAuth2Util - `pip install OAuth2Util`  
+  - OAuth2Util - `pip install praw-oauth2util`  
 
 ### Reddit Configuration
 1. Create a new app on Reddit [here](https://reddit.com/prefs/apps) with `script` type and set `redirect_uri` to `http://127.0.0.1:65010/authorize_callback`  
