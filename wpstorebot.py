@@ -1,6 +1,7 @@
 import praw
 import OAuth2Util
 import requests
+import re
 from bs4 import BeautifulSoup
 
 
@@ -56,15 +57,16 @@ def post_comment(comment, reply):
     return comment.id
 
 
-def get_app_name(str, ch):
-    for i, ltr in enumerate(str):
-        if ltr == ch:
-            yield i
+def get_app_name(stri):
+    trigger = "\w*wpapp\[([^]]*)\]"
+    exp = re.compile(trigger)
+    found = exp.findall(stri)
+    if found:
+        return found
 
 
 def main():
 
-    app_names = set()
     comment_id = []
     with open("comments.txt", "r") as f:
         REPLIED_COMMENTS = f.read().splitlines()
@@ -77,16 +79,16 @@ def main():
     comments = sub.get_comments()
 
     for comment in comments:
-        if ("wpapp[" in comment.body and "]" in comment.body and
-                not str(comment.id) in REPLIED_COMMENTS):
-            start = list(get_app_name(comment.body, "["))
-            end = list(get_app_name(comment.body, "]"))
-            for i, j in zip(start, end):
-                app_name = comment.body[i + 1:j]
-                name_split = app_name.split(",")
-                for i in name_split:
-                    if i != "":
-                        app_names.add(i.strip().lower())
+        trigger_found = get_app_name(comment.body)
+        if (trigger_found and not str(comment.id) in REPLIED_COMMENTS):
+            app_names = []
+            for apps in trigger_found:
+                if any("," in s for s in apps):
+                    name = apps.split(",")
+                    for app_split in name:
+                        app_names.append(app_split.strip().lower())
+                else:
+                    app_names.append(apps.strip().lower())
 
             url = ""
             for name in app_names:
@@ -95,7 +97,6 @@ def main():
                 print("commenting...")
                 done_id = post_comment(comment, url + BOT_BY)
                 comment_id.append(str(done_id))
-            app_names.clear()
     if comment_id:
         replied_file(comment_id)
     print("Done!")
