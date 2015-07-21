@@ -27,24 +27,28 @@ def get_url(app_name):
         if tag["data-os"] == "app":
             if tag.string is not None:
                 univ_url = universal_url(tag["href"])
-                if tag.string.lower() == app_name.lower():
-                    set_of_links += "[{0}]({1}) by {2}\n\n".format(
-                        tag.string, univ_url, get_publisher(univ_url))
-                    break
-                elif app_name.lower() in tag.string.lower():
-                    set_of_links += "[{0}]({1}) by {2}\n\n".format(
-                        tag.string, univ_url, get_publisher(univ_url))
-                    ctrl += 1
-                    if ctrl == 3:
+                publisher = get_publisher(univ_url)
+                if app_name.lower() in tag.string.lower():
+                    if app_name.lower() == tag.string.lower():
+                        set_of_links += prepare_comment(
+                            tag.string, univ_url, publisher)
                         break
+                    else:
+                        set_of_links += prepare_comment(
+                            tag.string, univ_url, publisher)
+                        ctrl += 1
                 else:
-                    set_of_links += "[{0}]({1}) by {2}\n\n".format(
-                        tag.string, univ_url, get_publisher(univ_url))
+                    set_of_links += prepare_comment(tag.string,
+                                                    univ_url, publisher)
                     ctrl += 1
-                    if ctrl == 3:
-                        break
+                if ctrl == 3:
+                    break
 
     return set_of_links
+
+
+def prepare_comment(app_name, app_url, app_dev):
+    return "[{0}]({1}) by {2}\n\n".format(app_name, app_url, app_dev)
 
 
 def get_publisher(app_url):
