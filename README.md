@@ -1,5 +1,5 @@
 # WPStore Reddit Bot
-A script written in Python to link Windows Phone Store apps when triggered by a keyword.
+A reddit bot for r/windowsphone written in Python to link Windows Phone Store apps when triggered by a keyword.
 
 ## Requirements
 1. Install [Python 3.4](https://www.python.org/download/releases/3.4.3/)  
