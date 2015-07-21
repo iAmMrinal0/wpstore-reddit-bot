@@ -28,23 +28,36 @@ def get_url(app_name):
             if tag.string is not None:
                 univ_url = universal_url(tag["href"])
                 if tag.string.lower() == app_name.lower():
-                    set_of_links += "[{0}]({1})\n\n".format(
-                        tag.string, univ_url)
+                    set_of_links += "[{0}]({1}) by {2}\n\n".format(
+                        tag.string, univ_url, get_publisher(univ_url))
                     break
                 elif app_name.lower() in tag.string.lower():
-                    set_of_links += "[{0}]({1})\n\n".format(
-                        tag.string, univ_url)
+                    set_of_links += "[{0}]({1}) by {2}\n\n".format(
+                        tag.string, univ_url, get_publisher(univ_url))
                     ctrl += 1
                     if ctrl == 3:
                         break
                 else:
-                    set_of_links += "[{0}]({1})\n\n".format(
-                        tag.string, univ_url)
+                    set_of_links += "[{0}]({1}) by {2}\n\n".format(
+                        tag.string, univ_url, get_publisher(univ_url))
                     ctrl += 1
                     if ctrl == 3:
                         break
 
     return set_of_links
+
+
+def get_publisher(app_url):
+    heads = {"User-Agent": "Mozilla/5.0 (Windows NT 6.3; WOW64; rv:36.0)"
+             " Gecko/20100101 Firefox/36.0"}
+
+    results = requests.get(app_url, headers=heads)
+
+    soup = BeautifulSoup(results.content, "html.parser")
+    publisher = soup.find("div",
+                          {"class": "content m-b-n clamp-5"}
+                          ).text.strip()
+    return publisher
 
 
 def universal_url(url):
