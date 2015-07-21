@@ -26,24 +26,29 @@ def get_url(app_name):
     for tag in soup.find_all("a", {"data-os": True}):
         if tag["data-os"] == "app":
             if tag.string is not None:
+                univ_url = universal_url(tag["href"])
                 if tag.string.lower() == app_name.lower():
                     set_of_links += "[{0}]({1})\n\n".format(
-                        tag.string, tag["href"])
+                        tag.string, univ_url)
                     break
                 elif app_name.lower() in tag.string.lower():
                     set_of_links += "[{0}]({1})\n\n".format(
-                        tag.string, tag["href"])
+                        tag.string, univ_url)
                     ctrl += 1
                     if ctrl == 3:
                         break
                 else:
                     set_of_links += "[{0}]({1})\n\n".format(
-                        tag.string, tag["href"])
+                        tag.string, univ_url)
                     ctrl += 1
                     if ctrl == 3:
                         break
 
     return set_of_links
+
+
+def universal_url(url):
+    return("{0}s?appid={1}".format(url[:28], url[-36:]))
 
 
 def replied_file(comm_id):
