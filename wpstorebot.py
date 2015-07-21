@@ -29,22 +29,15 @@ def get_url(app_name):
                 univ_url = universal_url(tag["href"])
                 publisher = get_publisher(univ_url)
                 possible = "Possible matches for *{0}*:\n\n".format(app_name)
-                if app_name.lower() in tag.string.lower():
-                    if app_name.lower() == tag.string.lower():
-                        set_of_links += prepare_comment(
-                            tag.string, univ_url, publisher)
-                        break
-                    else:
-                        if ctrl == 0:
-                            set_of_links += possible
-                        set_of_links += prepare_comment(
-                            tag.string, univ_url, publisher, True)
-                        ctrl += 1
+                if app_name.lower() == tag.string.lower():
+                    set_of_links += prepare_comment(
+                        tag.string, univ_url, publisher)
+                    break
                 else:
                     if ctrl == 0:
                         set_of_links += possible
-                    set_of_links += prepare_comment(tag.string,
-                                                    univ_url, publisher, True)
+                    set_of_links += prepare_comment(
+                        tag.string, univ_url, publisher, True)
                     ctrl += 1
                 if ctrl == 3:
                     break
