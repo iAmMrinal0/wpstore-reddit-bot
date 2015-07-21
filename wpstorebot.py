@@ -28,18 +28,23 @@ def get_url(app_name):
             if tag.string is not None:
                 univ_url = universal_url(tag["href"])
                 publisher = get_publisher(univ_url)
+                possible = "Possible matches for *{0}*:\n\n".format(app_name)
                 if app_name.lower() in tag.string.lower():
                     if app_name.lower() == tag.string.lower():
                         set_of_links += prepare_comment(
                             tag.string, univ_url, publisher)
                         break
                     else:
+                        if ctrl == 0:
+                            set_of_links += possible
                         set_of_links += prepare_comment(
-                            tag.string, univ_url, publisher)
+                            tag.string, univ_url, publisher, True)
                         ctrl += 1
                 else:
+                    if ctrl == 0:
+                        set_of_links += possible
                     set_of_links += prepare_comment(tag.string,
-                                                    univ_url, publisher)
+                                                    univ_url, publisher, True)
                     ctrl += 1
                 if ctrl == 3:
                     break
@@ -47,8 +52,11 @@ def get_url(app_name):
     return set_of_links
 
 
-def prepare_comment(app_name, app_url, app_dev):
-    return "[{0}]({1}) by {2}\n\n".format(app_name, app_url, app_dev)
+def prepare_comment(app_name, app_url, app_dev, possible=None):
+    tabs = ""
+    if possible:
+        tabs = "* "
+    return "{0}[{1}]({2}) by {3}\n\n".format(tabs, app_name, app_url, app_dev)
 
 
 def get_publisher(app_url):
