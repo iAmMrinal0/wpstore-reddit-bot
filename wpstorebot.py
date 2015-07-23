@@ -129,6 +129,7 @@ def main():
             REPLIED_COMMENTS.extend(comment_id)
         print("Done! Now sleeping for {0}s".format(SLEEP))
         time.sleep(SLEEP)
+    replied_file(comment_id)
 
 if __name__ == "__main__":
     main()
