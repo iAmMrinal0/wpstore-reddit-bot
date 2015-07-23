@@ -1,5 +1,5 @@
 # Config:
-scope=identity
+scope=submit
 refreshable=True
 
 # App Info
@@ -9,5 +9,3 @@ app_secret=
 # Token
 token=
 refresh_token=
-
-scope=submit
