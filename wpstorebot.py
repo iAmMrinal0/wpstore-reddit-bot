@@ -2,12 +2,14 @@ import praw
 import OAuth2Util
 import requests
 import re
+import time
 from bs4 import BeautifulSoup
 
 
 STORE_LINK = "https://www.windowsphone.com/en-us/search"
 SUBREDDIT = ""
 REPLIED_COMMENTS = []
+SLEEP = 60
 BOT_BY = """------
 
 ^Bot ^by ^[/u/iammrinal0](/user/iammrinal0)"""
@@ -125,6 +127,8 @@ def main():
         if comment_id:
             replied_file(comment_id)
             REPLIED_COMMENTS.extend(comment_id)
+        print("Done! Now sleeping for {0}s".format(SLEEP))
+        time.sleep(SLEEP)
 
 if __name__ == "__main__":
     main()
