@@ -90,7 +90,6 @@ def get_app_name(stri):
 
 def main():
 
-    comment_id = []
     with open("comments.txt", "r") as f:
         REPLIED_COMMENTS = f.read().splitlines()
 
@@ -99,30 +98,33 @@ def main():
     o.refresh()
 
     sub = r.get_subreddit(SUBREDDIT)
-    comments = sub.get_comments()
+    print("Starting Bot...")
+    while True:
+        o.refresh()
+        sub.refresh()
+        comment_id = []
+        for comment in sub.get_comments():
+            trigger_found = get_app_name(comment.body)
+            if (trigger_found and not str(comment.id) in REPLIED_COMMENTS):
+                app_names = []
+                for apps in trigger_found:
+                    if any("," in s for s in apps):
+                        name = apps.split(",")
+                        for app_split in name:
+                            app_names.append(app_split.strip().lower())
+                    else:
+                        app_names.append(apps.strip().lower())
 
-    for comment in comments:
-        trigger_found = get_app_name(comment.body)
-        if (trigger_found and not str(comment.id) in REPLIED_COMMENTS):
-            app_names = []
-            for apps in trigger_found:
-                if any("," in s for s in apps):
-                    name = apps.split(",")
-                    for app_split in name:
-                        app_names.append(app_split.strip().lower())
-                else:
-                    app_names.append(apps.strip().lower())
-
-            url = ""
-            for name in app_names:
-                url += get_url(name)
-            if url:
-                print("commenting...")
-                done_id = post_comment(comment, url + BOT_BY)
-                comment_id.append(str(done_id))
-    if comment_id:
-        replied_file(comment_id)
-    print("Done!")
+                url = ""
+                for name in app_names:
+                    url += get_url(name)
+                if url:
+                    print("commenting...")
+                    done_id = post_comment(comment, url + BOT_BY)
+                    comment_id.append(str(done_id))
+        if comment_id:
+            replied_file(comment_id)
+            REPLIED_COMMENTS.extend(comment_id)
 
 if __name__ == "__main__":
     main()
