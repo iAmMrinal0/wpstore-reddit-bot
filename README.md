@@ -24,8 +24,8 @@ After authentication, the bot will start to scan new comments which has the keyw
 After commenting, the ID of the parent comment is stored in `comments.txt` so as not to comment again.
 
 ## To Do
-1. Split the apps for better understanding of similar apps in case of no exact match found.
-2. Add logging and infinite run.
+1. Add message if app not found and also link to search in store if results aren't what was expected.
+2. Add logging.
 
 ### License
  See the [LICENSE](LICENSE) file for license rights and limitations (MIT)
