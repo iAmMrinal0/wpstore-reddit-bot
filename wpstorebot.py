@@ -43,7 +43,8 @@ def get_url(app_name):
                     ctrl += 1
                 if ctrl == 3:
                     break
-
+    if not set_of_links:
+        set_of_links = "This app was not found: *{0}*\n\n".format(app_name)
     return set_of_links
 
 
