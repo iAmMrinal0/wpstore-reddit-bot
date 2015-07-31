@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 STORE_LINK = "https://www.windowsphone.com/en-us/search"
 SUBREDDIT = ""
 REPLIED_COMMENTS = []
-SLEEP = 60
+SLEEP = 30
 BOT_BY = """------
 
 ^Bot ^by ^[/u/iammrinal0](/user/iammrinal0)"""
@@ -78,8 +78,11 @@ def replied_file(comm_id):
         f.write("\n".join(comm_id))
 
 
-def post_comment(comment, reply):
-    comment.reply(reply)
+def post_comment(comment, reply, comment_submission):
+    if comment_submission:
+        comment.reply(reply)
+    else:
+        comment.add_comment(reply)
     return comment.id
 
 
@@ -123,7 +126,32 @@ def main():
                     url += get_url(name)
                 if url:
                     print("commenting...")
-                    done_id = post_comment(comment, url + BOT_BY)
+                    done_id = post_comment(comment, url + BOT_BY, True)
+                    comment_id.append(str(done_id))
+        if comment_id:
+            replied_file(comment_id)
+            REPLIED_COMMENTS.extend(comment_id)
+        print("Done! Now sleeping for {0}s".format(SLEEP))
+        time.sleep(SLEEP)
+
+        for submn in sub.get_new():
+            trigger_found = get_app_name(submn.selftext)
+            if (trigger_found and not str(submn.id) in REPLIED_COMMENTS):
+                app_names = []
+                for apps in trigger_found:
+                    if any("," in s for s in apps):
+                        name = apps.split(",")
+                        for app_split in name:
+                            app_names.append(app_split.strip().lower())
+                    else:
+                        app_names.append(apps.strip().lower())
+
+                url = ""
+                for name in app_names:
+                    url += get_url(name)
+                if url:
+                    print("commenting...")
+                    done_id = post_comment(submn, url + BOT_BY, False)
                     comment_id.append(str(done_id))
         if comment_id:
             replied_file(comment_id)
