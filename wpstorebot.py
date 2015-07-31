@@ -8,8 +8,7 @@ from bs4 import BeautifulSoup
 
 STORE_LINK = "https://www.windowsphone.com/en-us/search"
 SUBREDDIT = ""
-REPLIED_COMMENTS = []
-SLEEP = 30
+SLEEP = 60
 BOT_BY = """------
 
 ^Bot ^by ^[/u/iammrinal0](/user/iammrinal0)"""
@@ -31,18 +30,19 @@ def get_url(app_name):
                 univ_url = universal_url(tag["href"])
                 publisher = get_publisher(univ_url)
                 possible = "Possible matches for *{0}*:\n\n".format(app_name)
-                if app_name.lower() == tag.string.lower():
-                    set_of_links += prepare_comment(
-                        tag.string, univ_url, publisher)
-                    break
-                else:
-                    if ctrl == 0:
-                        set_of_links += possible
-                    set_of_links += prepare_comment(
-                        tag.string, univ_url, publisher, True)
-                    ctrl += 1
-                if ctrl == 3:
-                    break
+                if publisher:
+                    if app_name.lower() == tag.string.lower():
+                        set_of_links += prepare_comment(
+                            tag.string, univ_url, publisher)
+                        break
+                    else:
+                        if ctrl == 0:
+                            set_of_links += possible
+                        set_of_links += prepare_comment(
+                            tag.string, univ_url, publisher, True)
+                        ctrl += 1
+                    if ctrl == 3:
+                        break
     if not set_of_links:
         set_of_links = "This app was not found: *{0}*\n\n".format(app_name)
     return set_of_links
@@ -64,8 +64,9 @@ def get_publisher(app_url):
     soup = BeautifulSoup(results.content, "html.parser")
     publisher = soup.find("div",
                           {"class": "content m-b-n clamp-5"}
-                          ).text.strip()
-    return publisher
+                          )
+    if publisher:
+        return publisher.text.strip()
 
 
 def universal_url(url):
@@ -94,10 +95,37 @@ def get_app_name(stri):
         return found
 
 
+def bot_process(text, comment_submission, replied_id):
+    comment_id = []
+    if comment_submission:
+        data = text.body
+    else:
+        data = text.selftext
+    trigger_found = get_app_name(data)
+    if (trigger_found and not str(text.id) in replied_id):
+        app_names = []
+        for apps in trigger_found:
+            if any("," in s for s in apps):
+                name = apps.split(",")
+                for app_split in name:
+                    app_names.append(app_split.strip().lower())
+            else:
+                app_names.append(apps.strip().lower())
+
+        url = ""
+        for name in app_names:
+            url += get_url(name)
+        if url:
+            print("commenting...")
+            done_id = post_comment(text, url + BOT_BY, comment_submission)
+            comment_id.append(str(done_id))
+    return comment_id
+
+
 def main():
 
     with open("comments.txt", "r") as f:
-        REPLIED_COMMENTS = f.read().splitlines()
+        replied_id = f.read().splitlines()
 
     r = praw.Reddit(user_agent="WP Store Linker v0.1 by /u/iammrinal0")
     o = OAuth2Util.OAuth2Util(r)
@@ -110,52 +138,24 @@ def main():
         sub.refresh()
         comment_id = []
         for comment in sub.get_comments():
-            trigger_found = get_app_name(comment.body)
-            if (trigger_found and not str(comment.id) in REPLIED_COMMENTS):
-                app_names = []
-                for apps in trigger_found:
-                    if any("," in s for s in apps):
-                        name = apps.split(",")
-                        for app_split in name:
-                            app_names.append(app_split.strip().lower())
-                    else:
-                        app_names.append(apps.strip().lower())
-
-                url = ""
-                for name in app_names:
-                    url += get_url(name)
-                if url:
-                    print("commenting...")
-                    done_id = post_comment(comment, url + BOT_BY, True)
-                    comment_id.append(str(done_id))
+            cmnt_id = bot_process(comment, True, replied_id)
+            if cmnt_id:
+                comment_id.extend(cmnt_id)
         if comment_id:
+            print("Writing to file...")
             replied_file(comment_id)
-            REPLIED_COMMENTS.extend(comment_id)
+            replied_id.extend(comment_id)
         print("Done! Now sleeping for {0}s".format(SLEEP))
         time.sleep(SLEEP)
-
+        comment_id = []
         for submn in sub.get_new():
-            trigger_found = get_app_name(submn.selftext)
-            if (trigger_found and not str(submn.id) in REPLIED_COMMENTS):
-                app_names = []
-                for apps in trigger_found:
-                    if any("," in s for s in apps):
-                        name = apps.split(",")
-                        for app_split in name:
-                            app_names.append(app_split.strip().lower())
-                    else:
-                        app_names.append(apps.strip().lower())
-
-                url = ""
-                for name in app_names:
-                    url += get_url(name)
-                if url:
-                    print("commenting...")
-                    done_id = post_comment(submn, url + BOT_BY, False)
-                    comment_id.append(str(done_id))
+            cmnt_id = bot_process(submn, False, replied_id)
+            if cmnt_id:
+                comment_id.extend(cmnt_id)
         if comment_id:
+            print("Writing to file...")
             replied_file(comment_id)
-            REPLIED_COMMENTS.extend(comment_id)
+            replied_id.extend(comment_id)
         print("Done! Now sleeping for {0}s".format(SLEEP))
         time.sleep(SLEEP)
     replied_file(comment_id)
