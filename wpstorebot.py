@@ -128,13 +128,12 @@ def main():
         replied_id = f.read().splitlines()
 
     r = praw.Reddit(user_agent="WP Store Linker v0.1 by /u/iammrinal0")
-    o = OAuth2Util.OAuth2Util(r)
-    o.refresh()
+    OAuth2Util.OAuth2Util(r)
 
     sub = r.get_subreddit(SUBREDDIT)
     print("Starting Bot...")
+
     while True:
-        o.refresh()
         sub.refresh()
         comment_id = []
         for comment in sub.get_comments():
