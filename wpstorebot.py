@@ -70,7 +70,7 @@ def get_publisher(app_url):
 
 
 def universal_url(url):
-    return("{0}s?appid={1}".format(url[:28], url[-36:]))
+    return "{0}s?appid={1}".format(url[:28], url[-36:])
 
 
 def replied_file(comm_id):
@@ -102,7 +102,7 @@ def bot_process(text, comment_submission, replied_id):
     else:
         data = text.selftext
     trigger_found = get_app_name(data)
-    if (trigger_found and not str(text.id) in replied_id):
+    if trigger_found and not str(text.id) in replied_id:
         app_names = []
         for apps in trigger_found:
             if any("," in s for s in apps):
