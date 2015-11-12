@@ -12,8 +12,8 @@ A reddit bot for r/windowsphone written in Python to link Windows Phone Store ap
 
 ### Reddit Configuration
 1. Create a new app on Reddit [here](https://reddit.com/prefs/apps) with `script` type and set `redirect_uri` to `http://127.0.0.1:65010/authorize_callback`  
-2. Note the `app key` and `app secret` and paste in `oauth.txt` in respective variables.
-3. To post a comment you need the `scope` set to `submit`
+2. Note the `app key` and `app secret` and paste in `oauth.ini` in respective variables.
+3. To read and post a comment you need the `scope` set to `submit, read`
 
 ## Usage
 
